@@ -18,7 +18,7 @@ class UserFixtures extends Fixture
     {
         $user = new User();
         $user->setEmail('cfrodrigues9@gmail.com');
-        $user->setPassword('demo');
+        $user->setPassword('$2y$13$JzSJwiSl5StjKlNZelojde.AvqAlXnjMj6wd8f6Y2TvnBQwvfaCA.');
         $user->setRoles(['ROLE_ADMIN']);
         $user->setFullName('Carlos Rodrigues');
         $user->setCountry(Country::FRANCE);
