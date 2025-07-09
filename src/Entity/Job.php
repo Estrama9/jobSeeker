@@ -29,9 +29,6 @@ class Job
     #[ORM\Column(length: 2000)]
     private ?string $description = null;
 
-    #[ORM\Column(enumType: Country::class)]
-    private ?Country $country = null;
-
     #[ORM\Column(enumType: City::class)]
     private ?City $city = null;
 
@@ -271,18 +268,6 @@ class Job
         return $this;
     }
 
-    public function getCountry(): ?Country
-    {
-        return $this->country;
-    }
-
-    public function setCountry(Country $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
     public function getCity(): ?City
     {
         return $this->city;
@@ -294,4 +279,10 @@ class Job
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->getTitle();
+    }
+
 }

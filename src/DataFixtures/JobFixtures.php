@@ -66,8 +66,6 @@ Télétravail possible, horaires flexibles.
 Matériel et formations à la demande.
 
 ');
-
-        $job->setCountry(Country::FRANCE);
         $job->setCity(City::PARIS);
         $job->setJobType(JobType::FULL_TIME);
         $job->setWorkMode(WorkMode::HYBRID);

@@ -3,8 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\City;
-use App\Enum\Country;
-use App\Enum\UserRole;
+use App\Enum\Entitlement;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,6 +30,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    private ?string $plainPassword = null;
+
     /**
      * @var list<string> The user roles
      */
@@ -40,14 +41,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $fullname = null;
 
-    #[ORM\Column(enumType: Country::class)]
-    private ?Country $country = null;
+     #[ORM\Column(length: 255)]
+    private ?string $country = 'France';
 
     #[ORM\Column(enumType: City::class)]
     private ?City $city = null;
 
-    #[ORM\Column(enumType: UserRole::class)]
-    private ?UserRole $enumRole = null;
+    #[ORM\Column(enumType: Entitlement::class)]
+    private ?Entitlement $entitlement = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -148,18 +149,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-      public function getCountry(): ?Country
-    {
-        return $this->country;
-    }
-
-    public function setCountry(Country $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
     public function getCity(): ?City
     {
         return $this->city;
@@ -172,14 +161,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEnumRole(): ?UserRole
+    public function getEntitlement(): ?Entitlement
     {
-        return $this->enumRole;
+        return $this->entitlement;
     }
 
-    public function setEnumRole(UserRole $enumRole): static
+    public function setEntitlement(Entitlement $entitlement): static
     {
-        $this->enumRole = $enumRole;
+        $this->entitlement = $entitlement;
 
         return $this;
     }
@@ -276,4 +265,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        $this->setUpdatedAt(new \DateTimeImmutable());
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getEmail(); // or $this->getUsername() or any string representation
+    }
+
 }

@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 use App\Entity\Company;
 use App\Entity\User;
 use App\Enum\City;
-use App\Enum\Country;
 use App\Enum\Industry;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -19,7 +18,7 @@ class CompanyFixtures extends Fixture implements DependentFixtureInterface
         $company = new Company();
         $company->setName('Donkey Code');
         $company->setDescription('La Team DonkeyCode aujourd\'hui, c\'est une équipe de 15 personnes, 5 femmes et 10 hommes, soudés et motivés ! Nous sommes fiers d\'avoir traversé la crise Covid avec nos clients, et de pouvoir continuer à grandir ensemble, doucement mais sûrement.');
-        $company->setCountry(Country::FRANCE);
+        $company->setCountry('Paris');
         $company->setCity(City::PARIS);
         $company->setTeamSize(15);
         $company->setEstablishmentDate(\DateTimeImmutable::createFromFormat('d/m/Y', '01/01/2014'));

@@ -25,8 +25,8 @@ class Company
     #[ORM\Column(length: 2000)]
     private ?string $description = null;
 
-    #[ORM\Column(enumType: Country::class)]
-    private ?Country $country = null;
+    #[ORM\Column(length: 255)]
+    private ?string $country = null;
 
     #[ORM\Column(enumType: City::class)]
     private ?City $city = null;
@@ -103,18 +103,6 @@ class Company
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getCountry(): ?Country
-    {
-        return $this->country;
-    }
-
-    public function setCountry(Country $country): static
-    {
-        $this->country = $country;
 
         return $this;
     }
@@ -303,5 +291,22 @@ class Company
         $this->youtube = $youtube;
 
         return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName(); // or any string property that represents the company
     }
 }

@@ -4,8 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\Enum\City;
-use App\Enum\Country;
-use App\Enum\UserRole;
+use App\Enum\Entitlement;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -18,12 +17,11 @@ class UserFixtures extends Fixture
     {
         $user = new User();
         $user->setEmail('cfrodrigues9@gmail.com');
-        $user->setPassword('$2y$13$JzSJwiSl5StjKlNZelojde.AvqAlXnjMj6wd8f6Y2TvnBQwvfaCA.');
+        $user->setPlainPassword('demo');
         $user->setRoles(['ROLE_ADMIN']);
         $user->setFullName('Carlos Rodrigues');
-        $user->setCountry(Country::FRANCE);
         $user->setCity(City::PARIS);
-        $user->setEnumRole(UserRole::ADMIN);
+        $user->setEntitlement(Entitlement::ADMIN);
         $manager->persist($user);
 
         $user = new User();
@@ -31,9 +29,8 @@ class UserFixtures extends Fixture
         $user->setPassword('demo');
         $user->setRoles(['ROLE_USER']);
         $user->setFullName('Toto Doe');
-        $user->setCountry(Country::FRANCE);
         $user->setCity(City::BORDEAUX);
-        $user->setEnumRole(UserRole::CANDIDATE);
+        $user->setEntitlement(Entitlement::CANDIDATE);
         $this->addReference(self::USER1, $user);
         $manager->persist($user);
 
@@ -42,9 +39,8 @@ class UserFixtures extends Fixture
         $user->setPassword('demo');
         $user->setRoles(['ROLE_USER']);
         $user->setFullName('Tata Doe');
-        $user->setCountry(Country::FRANCE);
         $user->setCity(City::TOULOUSE);
-        $user->setEnumRole(UserRole::EMPLOYER);
+        $user->setEntitlement(Entitlement::EMPLOYER);
         $this->addReference(self::USER2, $user);
         $manager->persist($user);
 

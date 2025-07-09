@@ -2,6 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Application;
+use App\Entity\Candidate;
+use App\Entity\Company;
+use App\Entity\Job;
+use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -44,5 +49,11 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+        yield MenuItem::linkToCrud('Users', 'fas fa-box', User::class);
+        yield MenuItem::linkToCrud('Candidates', 'fas fa-box', Candidate::class);
+        yield MenuItem::linkToCrud('Companies', 'fas fa-box', Company::class);
+        yield MenuItem::linkToCrud('Jobs', 'fas fa-box', Job::class);
+        yield MenuItem::linkToCrud('Applications', 'fas fa-box', Application::class);
+
     }
 }

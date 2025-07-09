@@ -12,16 +12,4 @@ enum EducationLevel: string
     case DOCTORATE = 'doctorate';
     case OTHER = 'other';
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::NONE => 'No diploma',
-            self::HIGH_SCHOOL => 'High School',
-            self::ASSOCIATE => 'Associate Degree',
-            self::BACHELOR => 'Bachelor’s Degree',
-            self::MASTER => 'Master’s Degree',
-            self::DOCTORATE => 'Doctorate / PhD',
-            self::OTHER => 'Other',
-        };
-    }
 }

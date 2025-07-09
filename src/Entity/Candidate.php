@@ -291,4 +291,10 @@ class Candidate
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return (string) $this->getUser(); // Assuming getUser() returns the User entity
+    }
+
 }
