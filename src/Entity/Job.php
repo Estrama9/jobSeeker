@@ -65,7 +65,7 @@ class Job
     /**
      * @var Collection<int, Application>
      */
-    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'job')]
+    #[ORM\OneToMany(targetEntity: Application::class, mappedBy: 'job' , cascade: ['remove'])]
     private Collection $applications;
 
     #[ORM\ManyToOne(inversedBy: 'jobs')]

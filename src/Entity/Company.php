@@ -3,15 +3,20 @@
 namespace App\Entity;
 
 use App\Enum\City;
-use App\Enum\Country;
 use App\Enum\Industry;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata as Api;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
+#[Api\ApiResource(
+    normalizationContext: ['groups' => ['read_company']],
+    denormalizationContext: ['groups' => ['write_company']]
+)]
 class Company
 {
     #[ORM\Id]
@@ -19,9 +24,11 @@ class Company
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['read_company', 'write_company'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['read_company', 'write_company'])]
     #[ORM\Column(length: 2000)]
     private ?string $description = null;
 
@@ -65,12 +72,13 @@ class Company
     private ?string $youtube = null;
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
+    #[Groups(['read_company', 'write_company'])]
     private ?User $user = null;
 
     /**
      * @var Collection<int, Job>
      */
-    #[ORM\OneToMany(targetEntity: Job::class, mappedBy: 'company')]
+    #[ORM\OneToMany(targetEntity: Job::class, mappedBy: 'company', cascade: ['remove'])]
     private Collection $jobs;
 
     public function __construct()

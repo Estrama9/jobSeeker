@@ -2,18 +2,34 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Enum\City;
 use App\Enum\Entitlement;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata as Api;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[Api\ApiResource(
+    normalizationContext: ['groups' => ['read_user']],
+    denormalizationContext: ['groups' => ['write_user']]
+)]
+#[Api\GetCollection()]
+#[Api\Get()]
+#[Api\Post()]
+#[Api\Patch()]
+#[Api\ApiFilter(SearchFilter::class, properties:['fullname' => 'ipartial'])]
+#[Api\ApiFilter(OrderFilter::class, properties:['fullname'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -22,6 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['read_user', 'write_user'])]
     private ?string $email = null;
 
     /**
@@ -29,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-
+    #[Groups(['read_user', 'write_user'])]
     private ?string $plainPassword = null;
 
     /**
@@ -38,16 +55,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read_user', 'write_user', 'read_company'])]
     private ?string $fullname = null;
 
-     #[ORM\Column(length: 255)]
+     #[ORM\Column(length: 255, nullable: true)]
+     #[Groups(['read_user', 'write_user'])]
     private ?string $country = 'France';
 
-    #[ORM\Column(enumType: City::class)]
+    #[ORM\Column(enumType: City::class, nullable: true)]
     private ?City $city = null;
 
-    #[ORM\Column(enumType: Entitlement::class)]
+    #[ORM\Column(enumType: Entitlement::class, nullable: true)]
     private ?Entitlement $entitlement = null;
 
     #[ORM\Column]
@@ -59,18 +78,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Compagny>
      */
-    #[ORM\OneToMany(targetEntity: Company::class, mappedBy: 'user')]
-    private Collection $compagnies;
+    #[ORM\OneToMany(targetEntity: Company::class, mappedBy: 'user', cascade: ['remove'])]
+    private Collection $companies;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Candidate $candidate = null;
+
+    #[ORM\Column]
+    private bool $isVerified = false;
 
     public function __construct()
     {
         $now = new \DateTimeImmutable();
         $this->createdAt = $now;
         $this->updatedAt = $now;
-        $this->compagnies = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
     }
 
     public function getId(): ?int
@@ -200,42 +223,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Compagny>
      */
-    public function getCompagnies(): Collection
+    public function getCompanies(): Collection
     {
-        return $this->compagnies;
+        return $this->companies;
     }
 
-    public function addCompagny(Company $compagny): static
+    public function addCompany(Company $company): static
     {
-        if (!$this->compagnies->contains($compagny)) {
-            $this->compagnies->add($compagny);
-            $compagny->setUser($this);
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+            $company->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeCompagny(Company $compagny): static
+    public function removeCompany(Company $company): static
     {
-        if ($this->compagnies->removeElement($compagny)) {
+        if ($this->companies->removeElement($company)) {
             // set the owning side to null (unless already changed)
-            if ($compagny->getUser() === $this) {
-                $compagny->setUser(null);
+            if ($company->getUser() === $this) {
+                $company->setUser(null);
             }
         }
 
         return $this;
-    }
-
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
-        return $data;
     }
 
     #[\Deprecated]
@@ -294,6 +306,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->getEmail(); // or $this->getUsername() or any string representation
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
     }
 
 }
