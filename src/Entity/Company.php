@@ -10,7 +10,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata as Api;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[Api\ApiResource(
@@ -19,12 +21,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class Company
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Api\ApiProperty(identifier:false)]
     private ?int $id = null;
 
-    #[Groups(['read_company', 'write_company'])]
+    #[Groups(['read_company', 'write_company', 'read_job'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -80,6 +85,12 @@ class Company
      */
     #[ORM\OneToMany(targetEntity: Job::class, mappedBy: 'company', cascade: ['remove'])]
     private Collection $jobs;
+
+    #[ORM\Column(length: 128, unique: true)]
+    #[Gedmo\Slug(fields: ['name'])]
+    #[Groups(['read_company', 'read_job'])]
+    #[Api\ApiProperty(identifier:true)]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -316,5 +327,17 @@ class Company
     public function __toString(): string
     {
         return $this->getName(); // or any string property that represents the company
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
     }
 }

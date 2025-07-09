@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Enum\City;
-use App\Enum\Country;
 use App\Enum\EducationLevel;
 use App\Enum\ExperienceLevel;
 use App\Enum\JobType;
@@ -12,10 +12,18 @@ use App\Enum\WorkMode;
 use App\Repository\JobRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata as Api;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: JobRepository::class)]
+#[Api\ApiResource(
+    normalizationContext: ['groups' => ['read_job']],
+    denormalizationContext: ['groups' => ['write_job']]
+)]
+// #[Api\ApiFilter(SearchFilter::class, properties:['company.name' => 'exact'])]
+// #[Api\ApiFilter(SearchFilter::class, properties:['company.name' => 'ipartial'])]
+#[Api\ApiFilter(SearchFilter::class, properties:['company.slug' => 'ipartial'])]
 class Job
 {
     #[ORM\Id]
@@ -23,9 +31,11 @@ class Job
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['read_job', 'write_job'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[Groups(['read_job', 'write_job'])]
     #[ORM\Column(length: 2000)]
     private ?string $description = null;
 
@@ -69,6 +79,7 @@ class Job
     private Collection $applications;
 
     #[ORM\ManyToOne(inversedBy: 'jobs')]
+    #[Groups(['read_job', 'write_job'])]
     private ?Company $company = null;
 
     public function __construct()

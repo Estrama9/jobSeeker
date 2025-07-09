@@ -13,6 +13,7 @@ class UserFixtures extends Fixture
     const ADMIN = 'admin';
     const USER1 = 'user1';
     const USER2 = 'user2';
+    const USER3 = 'user3';
     public function load(ObjectManager $manager): void
     {
         $user = new User();
@@ -42,6 +43,16 @@ class UserFixtures extends Fixture
         $user->setCity(City::TOULOUSE);
         $user->setEntitlement(Entitlement::EMPLOYER);
         $this->addReference(self::USER2, $user);
+        $manager->persist($user);
+
+        $user = new User();
+        $user->setEmail('titi@gmail.com');
+        $user->setPassword('demo');
+        $user->setRoles(['ROLE_USER']);
+        $user->setFullName('Titi Doe');
+        $user->setCity(City::LILLE);
+        $user->setEntitlement(Entitlement::EMPLOYER);
+        $this->addReference(self::USER3, $user);
         $manager->persist($user);
 
         $manager->flush();

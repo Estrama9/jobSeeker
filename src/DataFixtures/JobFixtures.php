@@ -18,6 +18,7 @@ use Doctrine\Persistence\ObjectManager;
 class JobFixtures extends Fixture implements DependentFixtureInterface
 {
     const JOB1 = 'job1';
+    const JOB2= 'job2';
     public function load(ObjectManager $manager): void
     {
         $job = new Job();
@@ -78,6 +79,23 @@ Matériel et formations à la demande.
         $job->setHiringLimit(1);
         $job->setCompany($this->getReference(CompanyFixtures::COMPANY1, Company::class));
         $this->setReference(self::JOB1, $job);
+        $manager->persist($job);
+
+        $job = new Job();
+        $job->setTitle('Serveur en Salle');
+        $job->setDescription('En tant que serveur(se), tu seras au cœur de l’expérience client de notre établissement. Ton sourire, ton efficacité et ton sens du service contribueront directement à la satisfaction de nos clients. Tu travailleras main dans la main avec l’équipe cuisine, la direction et les autres membres de la salle pour offrir un service chaleureux, rapide et professionnel.');
+        $job->setCity(City::LILLE);
+        $job->setJobType(JobType::PART_TIME);
+        $job->setWorkMode(WorkMode::ON_SITE);
+        $job->setStatusJob(StatusJob::OPEN);
+        $job->setMinSalary(25000);
+        $job->setMaxSalary(30000);
+        $job->setEducationLevel(EducationLevel::NONE);
+        $job->setExperienceLevel(ExperienceLevel::ENTRY);
+        $job->setExpirationDate((new \DateTimeImmutable())->modify('+1 month'));
+        $job->setHiringLimit(1);
+        $job->setCompany($this->getReference(CompanyFixtures::COMPANY2, Company::class));
+        $this->setReference(self::JOB2, $job);
         $manager->persist($job);
 
         $manager->flush();
